@@ -102,11 +102,11 @@ export default {
     logout() {
       uni.showModal({
         title: '提示',
-        content: '确定要解除绑定吗？',
+        content: '确定要退出登录吗？',
         success: (res) => {
           if (res.confirm) {
             uni.showToast({
-              title: '已解除绑定',
+              title: '已退出登录',
               icon: 'success'
             });
             setTimeout(() => {

@@ -17,14 +17,28 @@
 		{
 			"path": "pages/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
-				//"navigationStyle": "custom"
+				"navigationBarTitleText": "uni-app",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/profile",
 			"style": {
 				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/trees",
+			"style": {
+				"navigationBarTitleText": "树洞",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/trees/publish",
+			"style": {
+				"navigationBarTitleText": "发布树洞",
 				"navigationStyle": "custom"
 			}
 		}
