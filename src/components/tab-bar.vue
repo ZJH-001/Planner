@@ -2,20 +2,20 @@
   <!-- 底部导航栏 -->
   <view class="tab-bar">
     <view class="tab-item" :class="{ active: active === 'home' }" @tap="switchTab('home')">
-      <image class="tab-icon" :src="active === 'home' ? '/static/tabs/home-active.png' : '/static/tabs/home.png'" mode="aspectFit"></image>
+      <image class="tab-icon" src="/static/icons/home.png" mode="aspectFit"></image>
       <text class="tab-text">首页</text>
     </view>
     <view class="tab-item" :class="{ active: active === 'world' }" @tap="switchTab('world')">
-      <image class="tab-icon" :src="active === 'world' ? '/static/tabs/world-active.png' : '/static/tabs/world.png'" mode="aspectFit"></image>
+      <image class="tab-icon" src="/static/icons/plan.png" mode="aspectFit"></image>
       <text class="tab-text">规划</text>
     </view>
     
     <view class="tab-item" :class="{ active: active === 'message' }" @tap="switchTab('message')">
-      <image class="tab-icon" :src="active === 'message' ? '/static/tabs/message-active.png' : '/static/tabs/message.png'" mode="aspectFit"></image>
+      <image class="tab-icon" src="/static/icons/tree.png" mode="aspectFit"></image>
       <text class="tab-text">树洞</text>
     </view>
     <view class="tab-item" :class="{ active: active === 'profile' }" @tap="switchTab('profile')">
-      <image class="tab-icon" :src="active === 'profile' ? '/static/tabs/profile-active.png' : '/static/tabs/profile.png'" mode="aspectFit"></image>
+      <image class="tab-icon" src="/static/icons/user.png" mode="aspectFit"></image>
       <text class="tab-text">我的</text>
     </view>
   </view>
@@ -38,13 +38,21 @@ export default {
       // 根据点击的标签页进行跳转
       switch(tabName) {
         case 'home':
-          uni.redirectTo({
+          // uni.redirectTo({
+          uni.switchTab({
             url: '/pages/index'
           });
           break;
         case 'profile':
-          uni.redirectTo({
+          // uni.redirectTo({
+          uni.switchTab({
             url: '/pages/profile'
+          });
+          break;
+        case 'message':
+          // uni.redirectTo({
+          uni.switchTab({
+            url: '/pages/trees'
           });
           break;
         default:

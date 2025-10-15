@@ -1,6 +1,5 @@
 <template>
   <view class="container">
-    <!-- 注册部分 -->
     <view class="register-section">
       <view class="register-card">
         <view class="header">
@@ -17,7 +16,7 @@
           
           <view class="input-group">
             <text class="icon">📱</text>
-            <input class="input" type="number" v-model="phone" placeholder="请输入手机号" />
+            <input class="input" type="number" v-model="phone" placeholder="请输入手机号" maxlength="11" />
           </view>
           
           <view class="input-group">
@@ -35,9 +34,14 @@
             <text class="agreement-text">我已阅读并同意<text class="link" @tap="showTerms">《用户协议》</text>和<text class="link" @tap="showPrivacy">《隐私政策》</text></text>
           </view>
           
-          <button class="register-btn" @tap="register" :disabled="!agreeTerms">注 册</button>
+          <button 
+            class="register-btn" 
+            @tap="register" 
+            :disabled="!agreeTerms || isLoading"
+          >
+            {{ isLoading ? '注册中...' : '注 册' }}
+          </button>
           
-          <!-- 添加登录跳转 -->
           <view class="login-link">
             <text class="login-text">已有账号？</text>
             <text class="login-btn" @tap="goToLogin">立即登录</text>
@@ -50,6 +54,9 @@
 </template>
 
 <script>
+// 1. 引入注册 API 函数（确保它在你的 @/api/index.js 中已定义）
+import { register } from '@/api/index'; 
+
 export default {
   data() {
     return {
@@ -57,22 +64,33 @@ export default {
       phone: '',
       password: '',
       confirmPassword: '',
-      agreeTerms: false
+      agreeTerms: false,
+      isLoading: false // 添加加载状态
     }
   },
   methods: {
-    register() {
-      // 表单验证
+    showToast(message) {
+      uni.showToast({
+        title: message,
+        icon: 'none'
+      });
+    },
+    
+    // 2. 实现注册方法，包含 API 交互
+    async register() {
+      // **前端校验**
+      if (this.isLoading) return;
+
       if (!this.username) {
         this.showToast('请输入用户名');
         return;
       }
-      if (!this.phone) {
-        this.showToast('请输入手机号');
+      if (!this.phone || !/^1[3-9]\d{9}$/.test(this.phone)) {
+        this.showToast('请输入正确的手机号');
         return;
       }
-      if (!this.password) {
-        this.showToast('请输入密码');
+      if (this.password.length < 6) {
+        this.showToast('密码长度至少为6位');
         return;
       }
       if (this.password !== this.confirmPassword) {
@@ -84,25 +102,41 @@ export default {
         return;
       }
       
-      // 注册成功
-      uni.showToast({
-        title: '注册成功',
-        icon: 'success'
-      });
-      
-      // 实际项目中这里会有注册逻辑
-      setTimeout(() => {
-        uni.navigateTo({
-          url: '/pages/login'
+      this.isLoading = true;
+      uni.showLoading({ title: '注册中' });
+
+      try {
+        const registerData = {
+          username: this.username,
+          phone: this.phone,
+          password: this.password,
+        };
+        
+        // 3. 调用后端注册接口 /api/auth/register
+        await register(registerData); 
+
+        uni.hideLoading();
+        uni.showToast({
+          title: '注册成功，请登录',
+          icon: 'success'
         });
-      }, 1500);
+
+        // 4. 注册成功后跳转回登录页面
+        setTimeout(() => {
+          this.goToLogin();
+        }, 1500);
+        
+      } catch (error) {
+        // API 错误处理（通常在 request.js 中统一处理了）
+        uni.hideLoading();
+        console.error('注册请求错误:', error);
+        // 如果后端返回了具体的错误信息，可以显示：
+        // this.showToast(error.message || '注册失败'); 
+      } finally {
+        this.isLoading = false;
+      }
     },
-    showToast(message) {
-      uni.showToast({
-        title: message,
-        icon: 'none'
-      });
-    },
+    
     showTerms() {
       this.showToast('查看用户协议');
     },
@@ -110,8 +144,12 @@ export default {
       this.showToast('查看隐私政策');
     },
     goToLogin() {
-      uni.navigateTo({
-        url: '/pages/login'
+      // 假设登录页面路径为 /pages/auth/login
+      uni.navigateBack({
+        delta: 1,
+        fail: () => {
+          uni.redirectTo({ url: '/pages/auth/login' });
+        }
       });
     }
   }
@@ -119,6 +157,9 @@ export default {
 </script>
 
 <style>
+/* 样式部分保持不变，确保风格统一 */
+/* ... (原 register.vue 中的 <style> 内容) ... */
+
 .container {
   display: flex;
   flex-direction: column;
@@ -280,44 +321,5 @@ export default {
 
 .login-btn:active {
   opacity: 0.8;
-}
-
-/* 设计说明部分样式 */
-.design-notes {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  position: relative;
-  z-index: 1;
-}
-
-.notes-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-  display: block;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.note-item {
-  margin-bottom: 12px;
-}
-
-.note-label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #4A90E2;
-  margin-right: 5px;
-}
-
-.note-content {
-  font-size: 14px;
-  color: #666;
 }
 </style>

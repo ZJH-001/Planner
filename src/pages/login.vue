@@ -25,10 +25,12 @@
               <checkbox :checked="rememberMe" @tap="rememberMe = !rememberMe" />
               <text>记住密码</text>
             </label>
-            <text class="forget" @tap="forgetPassword">忘记密码?</text>
+            <text class="forget" @tap="goToForgetPassword">忘记密码?</text>
           </view>
           
-          <button class="login-btn" @tap="login">登 录</button>
+          <button class="login-btn" @tap="login">
+             {{ isLoading ? '登录中...' : '登 录' }}
+            </button>
           
           <!-- 添加注册跳转 -->
           <view class="register-link">
@@ -42,40 +44,99 @@
 </template>
 
 <script>
+// 1. 引入登录 API 函数
+import { login } from '@/api/index'; 
+
 export default {
   data() {
     return {
       username: '',
       password: '',
-      rememberMe: false
+      rememberMe: false,
+      isLoading: false // 添加加载状态，防止重复点击
     }
   },
   methods: {
-    login() {
-      uni.showToast({
-        title: '登录成功',
-        icon: 'success'
-      });
-      // 实际项目中这里会有登录逻辑
-      setTimeout(() => {
-        uni.navigateTo({
+    // 2. 登录方法（已根据后端 API 逻辑重写）
+    async login() {
+      if (!this.username || !this.password) {
+        uni.showToast({
+          title: '请填写账号和密码',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      this.isLoading = true;
+      uni.showLoading({ title: '登录中' });
+
+      try {
+        const loginData = {
+          username: this.username,
+          password: this.password,
+          rememberMe: this.rememberMe 
+        };
+        
+        // 调用封装的 API 函数 /api/auth/login
+        const resData = await login(loginData);
+
+        // 后端响应数据结构示例: { token: "...", userId: "...", ... }
+        
+        // 3. 存储认证令牌 (Token) - 用于后续请求
+        uni.setStorageSync('token', resData.token);
+        
+        // 4. 存储用户信息 (或根据需要存储关键信息)
+        uni.setStorageSync('if_finish_questionnaire', resData.if_finish_questionnaire);
+        uni.setStorageSync('userId', resData.userId);
+        uni.setStorageSync('username', resData.username);
+        
+        uni.hideLoading();
+        uni.showToast({
+          title: '登录成功',
+          icon: 'success'
+        });
+
+        // 5. 跳转到主页 (使用 switchTab 或 redirectTo)
+        // 假设主页是 TabBar 页面
+        if (resData.if_finish_questionnaire) {
+        uni.switchTab({
           url: '/pages/index'
         });
-      }, 1500);
+      } else {
+        uni.navigateTo({
+          url: '/pages/questionnaire'
+        })
+      }
+      } catch (error) {
+        // request.js 中通常已处理错误提示，这里确保关闭 loading
+        uni.hideLoading();
+        this.isLoading = false;
+        
+        // 如果 request.js 没有处理，则在这里处理
+        // uni.showToast({ title: error.message || '登录失败', icon: 'error' });
+        console.error('登录请求错误:', error);
+      } finally {
+        this.isLoading = false;
+      }
     },
-    forgetPassword() {
-      uni.showToast({
-        title: '忘记密码功能',
-        icon: 'none'
+    
+    // 6. 忘记密码跳转
+    goToForgetPassword() {
+      // 假设你的忘记密码页面路径为 /pages/auth/forget-password
+      uni.navigateTo({
+        url: '/pages/forget_password'
       });
     },
-    // 添加跳转到注册页面的方法
+    
+    // 7. 注册跳转
     goToRegister() {
+      // 假设你的注册页面路径为 /pages/auth/register
       uni.navigateTo({
         url: '/pages/register'
       });
     }
   }
+  // 样式（<style>）部分保持不变
 }
 </script>
 

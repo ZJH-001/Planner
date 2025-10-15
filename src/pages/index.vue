@@ -13,12 +13,12 @@
         <text class="nav-text">活动</text>
       </view>
       <view class="nav-item" @tap="navigateTo('/pages/task/task')">
-        <image class="nav-icon" src="/static/icons/task.png" mode="aspectFit"></image>
+        <image class="nav-icon" src="/static/task.png" mode="aspectFit"></image>
         <text class="nav-text">任务</text>
         <view class="badge">NEW</view>
       </view>
       <view class="nav-item" @tap="navigateTo('/pages/explore/explore')">
-        <image class="nav-icon" src="/static/icons/explore.png" mode="aspectFit"></image>
+        <image class="nav-icon" src="/static/explore.png" mode="aspectFit"></image>
         <text class="nav-text">探索</text>
       </view>
       <view class="nav-item" @tap="navigateTo('/pages/search/search')">
@@ -29,24 +29,56 @@
     
     <!-- 轮播广告区 -->
     <view class="banner-section">
-      <swiper class="banner-swiper" circular autoplay interval="3000" indicator-dots indicator-active-color="#ffffff">
-        <swiper-item>
-          <view class="banner-item">
-            <image class="banner-image" src="/static/banner/banner1.jpg" mode="aspectFill"></image>
+      <swiper 
+        class="banner-swiper" 
+        circular 
+        autoplay 
+        interval="4000" 
+        indicator-dots 
+        indicator-active-color="#ffffff"
+        indicator-color="rgba(255, 255, 255, 0.5)"
+        @change="onBannerChange"
+      >
+        <swiper-item 
+          v-for="(banner, index) in bannerList" 
+          :key="banner.id"
+          @tap="onBannerClick(banner)"
+        >
+          <view class="banner-item" :style="{ backgroundColor: banner.backgroundColor }">
+            <image 
+              class="banner-image" 
+              :src="banner.image" 
+              mode="aspectFill"
+              :lazy-load="true"
+              @error="onImageError"
+            ></image>
             <view class="banner-content">
-              <text class="banner-title">邀请好友玩森林派对</text>
-              <text class="banner-subtitle">免费获永久限定装扮</text>
+              <text class="banner-title">{{ banner.title }}</text>
+              <text class="banner-subtitle">{{ banner.subtitle }}</text>
             </view>
+            <!-- 渐变遮罩 -->
+            <view class="banner-overlay"></view>
           </view>
         </swiper-item>
       </swiper>
-      <view class="swiper-dots">
-        <view class="dot active"></view>
-        <view class="dot"></view>
-        <view class="dot"></view>
+    </view>
+     <!-- 其他玩法区域 -->
+     <view class="other-section">
+      <view class="section-header">
+        <text class="section-title">我的规划</text>
+      </view>
+      <view class="forest-voice" @tap="navigateTo('/pages/voice/voice')">
+        <image class="voice-icon" src="/static/icons/voice.png" mode="aspectFit"></image>
+        <text class="voice-title">森林之声</text>
+        <text class="voice-arrow">></text>
+      </view>
+      <view class="voice-messages">
+        <view class="voice-message" v-for="(msg, index) in voiceMessages" :key="index">
+          <image class="message-avatar" :src="msg.avatar" mode="aspectFill"></image>
+          <text class="message-content">{{msg.content}}</text>
+        </view>
       </view>
     </view>
-    
     <!-- 在线好友区 -->
     <view class="friends-section">
       <view class="section-header">
@@ -64,52 +96,37 @@
     
     <!-- 游戏区域 -->
     <view class="games-section">
-      <view class="game-card large" @tap="startGame('神族之战')">
+      <!-- <view class="game-card large" @tap="startGame('神族之战')">
         <view class="game-info">
           <text class="game-title">神族之战</text>
           <text class="game-mode">单兵制</text>
           <text class="game-players">6,10,11人</text>
         </view>
         <image class="game-icon" src="/static/games/game1.png" mode="aspectFit"></image>
-      </view>
+      </view> -->
       
       <view class="games-row">
-        <view class="game-card small" @tap="startGame('元素之战')">
+        <view class="game-card small" @tap="navigateTo('/pages/ai_chat')">
           <view class="game-info">
-            <text class="game-title">元素之战</text>
-            <text class="game-mode">双兵制</text>
-            <text class="game-players">10人</text>
+            <text class="game-title">AI规划建议</text>
+            <text class="game-mode">一对一 私人定制</text>
+            <text class="game-players">点击开始-></text>
           </view>
-          <image class="game-icon small" src="/static/games/game2.png" mode="aspectFit"></image>
+          <image class="game-icon small" src="/static/icons/ai.png" mode="aspectFit"></image>
         </view>
         
-        <view class="game-card small yellow" @tap="navigateTo('/pages/friends/party')">
+        <view class="game-card small " @tap="navigateTo('/pages/friends/party')">
           <view class="game-info">
-            <text class="game-title">森友会</text>
-            <text class="game-desc">比赛、民乐</text>
+            <text class="game-title">我的成果</text>
+            <text class="game-desc">比赛 荣誉 称号...</text>
+            <text class="game-players">记录点滴成长-></text>
           </view>
-          <image class="game-icon small" src="/static/games/party.png" mode="aspectFit"></image>
+          <image class="game-icon small" src="/static/icons/growth.png" mode="aspectFit"></image>
         </view>
       </view>
     </view>
     
-    <!-- 其他玩法区域 -->
-    <view class="other-section">
-      <view class="section-header">
-        <text class="section-title">找他玩</text>
-      </view>
-      <view class="forest-voice" @tap="navigateTo('/pages/voice/voice')">
-        <image class="voice-icon" src="/static/icons/voice.png" mode="aspectFit"></image>
-        <text class="voice-title">森林之声</text>
-        <text class="voice-arrow">></text>
-      </view>
-      <view class="voice-messages">
-        <view class="voice-message" v-for="(msg, index) in voiceMessages" :key="index">
-          <image class="message-avatar" :src="msg.avatar" mode="aspectFill"></image>
-          <text class="message-content">{{msg.content}}</text>
-        </view>
-      </view>
-    </view>
+   
     
 
     <!-- 使用TabBar组件 -->
@@ -126,11 +143,40 @@ export default {
   },
   data() {
     return {
+      // 轮播图数据
+      bannerList: [
+        {
+          id: 1,
+          image: '/static/cd/todo.png',
+          title: 'TODO计划表',
+          subtitle: '你的未来，由你掌控',
+          link: '/pages/activity/party',
+          backgroundColor: '#4CAF50'
+        },
+        {
+          id: 2,
+          image: '/static/cd/ai.png',
+          title: 'AI生涯规划助手',
+          subtitle: '个性化定制你的未来',
+          link: '/pages/ai_chat',
+          backgroundColor: '#2196F3'
+        },
+        {
+          id: 3,
+          image: '/static/cd/planner.png',
+          title: '探索职业发展路径',
+          subtitle: '发现更多可能性',
+          link: '/pages/explore/career',
+          backgroundColor: '#FF9800'
+        }
+      ],
+      currentBannerIndex: 0, // 当前轮播索引
+      
       friends: [
-        { name: '这很烟评', avatar: '/static/avatars/avatar1.png', status: '在线' },
-        { name: '大型机!', avatar: '/static/avatars/avatar2.png', status: '在线' },
-        { name: '猫羊羊不群', avatar: '/static/avatars/avatar3.png', status: '在线' },
-        { name: '露露', avatar: '/static/avatars/avatar4.png', status: '在线' },
+        { name: '四级', avatar: '/static/avatars/avatar1.png', status: '在线' },
+        { name: '六级', avatar: '/static/avatars/avatar2.png', status: '在线' },
+        { name: '教资', avatar: '/static/avatars/avatar3.png', status: '在线' },
+        { name: '408', avatar: '/static/avatars/avatar4.png', status: '在线' },
         { name: '刘浩', avatar: '/static/avatars/avatar5.png', status: '在线' }
       ],
       voiceMessages: [
@@ -140,18 +186,69 @@ export default {
     }
   },
   methods: {
+    // 轮播图变化事件
+    onBannerChange(e) {
+      this.currentBannerIndex = e.detail.current;
+      console.log('轮播图切换到:', this.currentBannerIndex);
+    },
+    
+    // 轮播图点击事件
+    onBannerClick(banner) {
+      console.log('点击轮播图:', banner);
+      
+      if (banner.link) {
+        // 检查是否为外部链接
+        if (banner.link.startsWith('http')) {
+          // 外部链接，复制到剪贴板或在浏览器中打开
+          uni.setClipboardData({
+            data: banner.link,
+            success: () => {
+              uni.showToast({
+                title: '链接已复制到剪贴板',
+                icon: 'success'
+              });
+            }
+          });
+        } else {
+          // 内部页面跳转
+          this.navigateTo(banner.link);
+        }
+      } else {
+        // 没有链接时显示提示
+        uni.showToast({
+          title: banner.title,
+          icon: 'none'
+        });
+      }
+    },
+    
+    // 图片加载失败处理
+    onImageError(e) {
+      console.error('轮播图片加载失败:', e);
+      // 可以设置默认图片或显示错误提示
+    },
+    
     navigateTo(url) {
       // 页面跳转
       uni.navigateTo({
-        url: url
+        url: url,
+        fail: (err) => {
+          console.error('页面跳转失败:', err);
+          uni.showToast({
+            title: '页面暂未开放',
+            icon: 'none'
+          });
+        }
       });
     },
+    
     chatWithFriend(friend) {
       // 与好友聊天
       uni.navigateTo({
         url: `/pages/chat/chat?name=${friend.name}`
       });
     },
+    
     startGame(gameName) {
       // 开始游戏
       uni.showToast({
@@ -232,10 +329,11 @@ export default {
   border-radius: 20rpx;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .banner-swiper {
-  height: 300rpx;
+  height: 320rpx;
 }
 
 .banner-item {
@@ -243,53 +341,61 @@ export default {
   height: 100%;
   border-radius: 20rpx;
   overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.banner-item:active {
+  transform: scale(0.98);
 }
 
 .banner-image {
   width: 100%;
   height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  pointer-events: none;
 }
 
 .banner-content {
   position: absolute;
   left: 40rpx;
   bottom: 40rpx;
+  right: 40rpx;
   color: white;
+  z-index: 2;
 }
 
 .banner-title {
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: bold;
   display: block;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
 }
 
 .banner-subtitle {
-  font-size: 24rpx;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 6rpx 16rpx;
+  font-size: 26rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10rpx);
+  padding: 8rpx 20rpx;
   border-radius: 30rpx;
-}
-
-.swiper-dots {
-  position: absolute;
-  bottom: 20rpx;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5);
-  margin: 0 8rpx;
-}
-
-.dot.active {
-  background-color: #ffffff;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.3);
 }
 
 /* 在线好友区 */
@@ -405,8 +511,8 @@ export default {
   width: 120rpx;
   height: 120rpx;
   position: absolute;
-  right: 20rpx;
-  bottom: 20rpx;
+  right: 15rpx;
+  bottom: 40rpx;
 }
 
 .game-icon.small {
@@ -416,7 +522,7 @@ export default {
 
 /* 其他玩法区域 */
 .other-section {
-  margin: 0 20rpx 120rpx;
+  margin: 0 20rpx 20rpx;
   background-color: #fff;
   border-radius: 20rpx;
   padding: 20rpx;

@@ -3,10 +3,15 @@
     <!-- 顶部用户信息区 -->
     <view class="header">
       <view class="user-info">
-        <image class="user-avatar" src="/static/avatars/avatar1.png" mode="aspectFill"></image>
+        <image 
+          class="user-avatar" 
+          :src="userInfo.avatar || '/static/cat.png'" 
+          mode="aspectFill"
+        ></image>
         <view class="user-details">
-          <text class="user-name">Moslos</text>
-          <text class="user-desc">湖北省武汉理工大学计算机智能学院计算机科学与技术专业2023级3班团支部</text>
+        <text class="user-name">{{ userInfo.nickname || '加载中...' }}</text>
+        <text class="user-desc">{{ userInfo.organization || '暂无描述信息' }}</text>
+        <text class="user-desc">{{userInfo.description || '暂无描述信息' }}</text>
         </view>
       </view>
     </view>
@@ -18,11 +23,11 @@
     
     <!-- 功能图标区 -->
     <view class="feature-grid">
-      <view class="feature-item" @tap="navigateTo('/pages/organization/life')">
+      <view class="feature-item" @tap="navigateTo('/pages/profile/look_at_me')">
         <view class="feature-icon-wrapper org-life">
-          <image class="feature-icon" src="/static/icons/org-life.png" mode="aspectFit"></image>
+          <image class="feature-icon" src="/static/icons/growth.png" mode="aspectFit"></image>
         </view>
-        <text class="feature-text">组织生活</text>
+        <text class="feature-text">看看我自己</text>
       </view>
       <view class="feature-item" @tap="navigateTo('/pages/organization/resources')">
         <view class="feature-icon-wrapper org-resources">
@@ -34,19 +39,19 @@
     
     <!-- 功能列表 -->
     <view class="menu-list">
-      <view class="menu-item" @tap="navigateTo('/pages/organization/my')">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/edit_information')">
         <image class="menu-icon" src="/static/icons/my-org.png" mode="aspectFit"></image>
-        <text class="menu-text">我的组织</text>
+        <text class="menu-text">账号信息</text>
         <text class="menu-arrow">></text>
       </view>
       
-      <view class="menu-item" @tap="navigateTo('/pages/scan/scan')">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/personal_info')">
         <image class="menu-icon" src="/static/icons/scan.png" mode="aspectFit"></image>
-        <text class="menu-text">扫一扫</text>
+        <text class="menu-text">个人情况</text>
         <text class="menu-arrow">></text>
       </view>
       
-      <view class="menu-item" @tap="navigateTo('/pages/settings/password')">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/change_password')">
         <image class="menu-icon" src="/static/icons/password.png" mode="aspectFit"></image>
         <text class="menu-text">修改密码</text>
         <text class="menu-arrow">></text>
@@ -54,7 +59,7 @@
       
       <view class="menu-item" @tap="navigateTo('/pages/settings/default-org')">
         <image class="menu-icon" src="/static/icons/default-org.png" mode="aspectFit"></image>
-        <text class="menu-text">设置默认组织</text>
+        <text class="menu-text">个人成果管理</text>
         <text class="menu-arrow">></text>
       </view>
       
@@ -77,6 +82,7 @@
 
 <script>
 import TabBar from '@/components/tab-bar.vue'
+import  {getUserInfo}  from '../api/index';
 
 export default {
   components: {
@@ -84,14 +90,43 @@ export default {
   },
   data() {
     return {
+      // 2. 初始化用户信息数据结构
       userInfo: {
-        name: '陆云龙',
-        avatar: '/static/avatars/avatar1.png',
-        description: '湖北省武汉理工大学计算机智能学院计算机科学与技术专业2023级3班团支部'
+        userId: '',
+        username: '加载中...',
+        nickname: 'anonymous',
+        avatar: '/static/avatars/default.png', // 默认头像
+        description: '', // 用户描述
+        organization: '' // 所属组织
       }
     }
+    
+  },
+
+  onShow() {
+    this.getUserInfo();
   },
   methods: {
+    async getUserInfo() {
+       try {
+        const UserData = {
+          username: this.username,
+        };
+        
+        // 调用封装的 API 函数 /api/getUserInfo
+        const resData = await getUserInfo(UserData);
+        this.userInfo = {
+          userId: resData.userId,
+          username: resData.username,
+          avatar: resData.avatar,
+          description: resData.description,
+          organization: resData.organization,
+          nickname: resData.nickname
+        };
+      } catch (error) {
+        console.error('获取当前用户信息失败：', error);
+      }
+    },
     navigateTo(url) {
       // 页面跳转
       uni.navigateTo({
@@ -102,11 +137,11 @@ export default {
     logout() {
       uni.showModal({
         title: '提示',
-        content: '确定要解除绑定吗？',
+        content: '确定要退出登录吗？',
         success: (res) => {
           if (res.confirm) {
             uni.showToast({
-              title: '已解除绑定',
+              title: '已退出登录',
               icon: 'success'
             });
             setTimeout(() => {
