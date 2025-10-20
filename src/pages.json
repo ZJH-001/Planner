@@ -1,0 +1,66 @@
+{
+	"pages": [
+		{
+			"path": "pages/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/index",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+				//"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/world",
+			"style": {
+				"navigationBarTitleText": "规划",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/holland",
+			"style": {
+				"navigationBarTitleText": "霍兰德职业兴趣测评",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/planning-detail",
+			"style": {
+				"navigationBarTitleText": "规划详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/career-assessment",
+			"style": {
+				"navigationBarTitleText": "生涯测评",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}
