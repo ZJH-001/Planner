@@ -109,6 +109,7 @@ const parseStreamChunk = (chunk, onMessage, onComplete, onError) => {
  * @param {function} onComplete - 完成回调
  * @param {function} onError - 错误回调
  */
+// export可以让其他文件improt进去
 export const sendChatMessage = (message, userData, history = [], onMessage, onComplete, onError) => {
   console.log('发送消息:', message, '历史记录长度:', history.length);
   

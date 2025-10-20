@@ -115,7 +115,7 @@
           <image class="game-icon small" src="/static/icons/ai.png" mode="aspectFit"></image>
         </view>
         
-        <view class="game-card small " @tap="navigateTo('/pages/friends/party')">
+        <view class="game-card small " @tap="navigateTo('/pages/profile/look_at_me')">
           <view class="game-info">
             <text class="game-title">我的成果</text>
             <text class="game-desc">比赛 荣誉 称号...</text>

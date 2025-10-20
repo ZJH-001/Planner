@@ -138,12 +138,38 @@ export const publishPost = (data) => {
   });
 };
 
+/**
+ * 12. 点赞/取消点赞帖子
+ * @param {string} postId - 帖子ID
+ */
+export const likePost = (data) => {
+  return request({
+    url: `/api/trees/posts/like`,
+    method: 'POST',
+    data: {postId:data}
+  });
+};
+
+/**
+ * 13. 收藏/取消踩帖子
+ * @param {string} postId - 帖子ID
+ */
+export const disLikePost = (data) => {
+  return request({
+    url: `/api/trees/posts/dislike`,
+    method: 'POST',
+    data: {postId:data}
+  });
+};
+
+
+
 
 
 //上传图片
 export const uploadFile = (filePath) => {
 
-  const uploadUrl = BASE_URL + '/api/store/upload_post_image'; // 后端图片上传接口
+  const uploadUrl = BASE_URL + '/api/upload/upload_post_image'; // 后端图片上传接口
         console.log('后端接受路径：', uploadUrl);
       return new Promise((resolve, reject) => {
         const uploadTask = uni.uploadFile({
@@ -219,7 +245,7 @@ export const getQuestionnaireData = () => {
  */
 export const getAchievements = (category = '') => {
   return request({
-    url: '/api/user/achievements',
+    url: '/api/achievements/get_achievement',
     method: 'GET',
     data: category ? { category } : {}
   });
@@ -239,7 +265,7 @@ export const getAchievements = (category = '') => {
  */
 export const addAchievement = (data) => {
   return request({
-    url: '/api/user/achievements',
+    url: '/api/achievements/add_achievement',
     method: 'POST',
     data: data
   });
@@ -252,7 +278,7 @@ export const addAchievement = (data) => {
  */
 export const updateAchievement = (id, data) => {
   return request({
-    url: `/api/user/achievements/${id}`,
+    url: `/api/achievements/update_achievement/${id}`,
     method: 'PUT',
     data: data
   });
@@ -264,7 +290,7 @@ export const updateAchievement = (id, data) => {
  */
 export const deleteAchievement = (id) => {
   return request({
-    url: `/api/user/achievements/${id}`,
+    url: `/api/achievements/delete_achievement/${id}`,
     method: 'DELETE'
   });
 };
@@ -274,25 +300,48 @@ export const deleteAchievement = (id) => {
  */
 export const getAchievementStats = () => {
   return request({
-    url: '/api/user/achievements/stats',
+    url: '/api/achievements/get_achievement_stats',
     method: 'GET'
   });
 };
 
 /**
  * 上传成果相关图片
- * @param {File} file - 图片文件
+ * @param {string} filePath - 图片本地路径
  */
-export const uploadAchievementImage = (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
+export const uploadAchievementImage = (filePath) => {
+  const uploadUrl = BASE_URL + '/api/upload/upload_achievement_image'; // 后端成果图片上传接口
+  console.log('成果图片上传路径：', uploadUrl);
   
-  return request({
-    url: '/api/upload/achievement-image',
-    method: 'POST',
-    data: formData,
-    header: {
-      'Content-Type': 'multipart/form-data'
-    }
+  return new Promise((resolve, reject) => {
+    const uploadTask = uni.uploadFile({
+      url: uploadUrl,
+      filePath: filePath,
+      name: 'file', // 必须与后端接收文件的字段名一致
+      header: { 
+        // 'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      },
+      formData: {},
+      success: (uploadRes) => {
+        // uni.uploadFile 的 res.data 是字符串，需要 JSON.parse
+        const resData = JSON.parse(uploadRes.data);
+        
+        if (uploadRes.statusCode === 200 && resData.code === 200) {
+          // 图片上传成功，返回图片URL
+          resolve(resData.data.url);
+        } else {
+          // 图片上传失败
+          reject(new Error(resData.message || `图片上传失败: ${uploadRes.statusCode}`));
+        }
+      },
+      fail: (err) => {
+        reject(new Error('网络请求失败或服务器无响应: ' + err));
+      }
+    });
+
+    // 监听上传进度 (可选)
+    uploadTask.onProgressUpdate((res) => {
+      console.log('成果图片上传进度:', res.progress);
+    });
   });
 };

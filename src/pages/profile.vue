@@ -57,15 +57,9 @@
         <text class="menu-arrow">></text>
       </view>
       
-      <view class="menu-item" @tap="navigateTo('/pages/settings/default-org')">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/look_at_me')">
         <image class="menu-icon" src="/static/icons/default-org.png" mode="aspectFit"></image>
         <text class="menu-text">个人成果管理</text>
-        <text class="menu-arrow">></text>
-      </view>
-      
-      <view class="menu-item" @tap="navigateTo('/pages/settings/security')">
-        <image class="menu-icon" src="/static/icons/security.png" mode="aspectFit"></image>
-        <text class="menu-text">安全中心</text>
         <text class="menu-arrow">></text>
       </view>
     </view>

@@ -1,6 +1,15 @@
 <template>
   <view class="achievement-container">
     <!-- 顶部个人概览区 -->
+    <view class="header">
+      <view class="back-btn" @tap="goBack">
+        <text class="back-icon">←</text>
+      </view>
+      <text class="header-title">我的成果</text>
+      
+    </view>
+
+
     <view class="header-section">
       <view class="user-profile">
         <image 
@@ -93,7 +102,7 @@
           <!-- 成果图片 -->
           <view class="achievement-image" v-if="achievement.images && achievement.images.length > 0">
             <image 
-              :src="achievement.images[0]" 
+              :src=" 'https://uvpddncsycmr.sealoshzh.site'+achievement.images[0]" 
               mode="aspectFill"
               class="card-image"
               :lazy-load="true"
@@ -143,7 +152,7 @@
 
     <!-- 添加/编辑成果弹窗 -->
     <view v-if="showForm" class="form-overlay" @tap="hideForm">
-      <view class="form-container" @tap.stop>
+      <view class="form-container" @tap.stop="handleFormClick">
         <view class="form-header">
           <text class="form-title">{{ isEditing ? '编辑成果' : '添加成果' }}</text>
           <view class="form-close" @tap="hideForm">
@@ -171,23 +180,25 @@
           <!-- 成果标题 -->
           <view class="form-group">
             <text class="form-label">成果标题</text>
-            <input 
-              class="form-input" 
+            <textarea 
+              class="form-textarea" 
               v-model="formData.title" 
-              placeholder="请输入成果标题"
+              placeholder="请输入你的成果名称..."
               maxlength="50"
-            />
+              auto-height
+            ></textarea>
           </view>
           
           <!-- 颁发机构 -->
           <view class="form-group">
             <text class="form-label">颁发机构</text>
-            <input 
-              class="form-input" 
+            <textarea 
+              class="form-textarea" 
               v-model="formData.organization" 
-              placeholder="请输入颁发机构"
+              placeholder="请输入颁发机构..."
               maxlength="50"
-            />
+              auto-height
+            ></textarea>
           </view>
           
           <!-- 获得时间 -->
@@ -233,37 +244,17 @@
             ></textarea>
           </view>
           
-          <!-- 标签 -->
-          <view class="form-group">
-            <text class="form-label">相关标签</text>
-            <input 
-              class="form-input" 
-              v-model="tagInput" 
-              placeholder="输入标签后按回车添加"
-              @confirm="addTag"
-            />
-            <view class="tags-preview" v-if="formData.tags && formData.tags.length > 0">
-              <view 
-                v-for="(tag, index) in formData.tags" 
-                :key="index"
-                class="tag-preview"
-                @tap="removeTag(index)"
-              >
-                {{ tag }} ×
-              </view>
-            </view>
-          </view>
-          
           <!-- 图片上传 -->
           <view class="form-group">
             <text class="form-label">相关图片</text>
             <view class="image-upload-container">
               <view 
                 v-for="(image, index) in formData.images" 
+                
                 :key="index"
                 class="uploaded-image"
               >
-                <image :src="image" mode="aspectFill" class="preview-image"></image>
+                <image :src=" 'https://uvpddncsycmr.sealoshzh.site'+image" mode="aspectFill" class="preview-image"></image>
                 <view class="remove-image" @tap="removeImage(index)">×</view>
               </view>
               <view class="upload-btn" @tap="chooseImage" v-if="formData.images.length < 3">
@@ -317,7 +308,7 @@ export default {
         { key: 'certificate', name: '技能证书', icon: '/static/icons/certificate.png' },
         { key: 'award', name: '获奖荣誉', icon: '/static/icons/award.png' },
         { key: 'experience', name: '实践经历', icon: '/static/icons/experience.png' },
-        { key: 'work', name: '作品展示', icon: '/static/icons/work.png' }
+        { key: 'work', name: '作品demo', icon: '/static/icons/work.png' }
       ],
       
       // 当前分类
@@ -341,11 +332,11 @@ export default {
         images: [],
         tags: []
       },
-      tagInput: '',
       categoryIndex: 0
     }
   },
   
+  //过滤成就列表 
   computed: {
     filteredAchievements() {
       if (!this.currentCategory) {
@@ -366,6 +357,9 @@ export default {
   },
   
   methods: {
+    goBack(){
+      uni.navigateBack();
+    },
     // 加载用户信息
     async loadUserInfo() {
       try {
@@ -510,6 +504,11 @@ export default {
       this.resetForm();
     },
     
+    // 处理表单容器点击
+    handleFormClick() {
+      // 阻止事件冒泡，但不做其他处理
+    },
+    
     // 重置表单
     resetForm() {
       this.formData = {
@@ -522,7 +521,6 @@ export default {
         images: [],
         tags: []
       };
-      this.tagInput = '';
       this.categoryIndex = 0;
     },
     
@@ -542,39 +540,66 @@ export default {
       this.formData.importance = level;
     },
     
-    // 添加标签
-    addTag() {
-      const tag = this.tagInput.trim();
-      if (tag && !this.formData.tags.includes(tag)) {
-        this.formData.tags.push(tag);
-        this.tagInput = '';
-      }
-    },
-    
-    // 移除标签
-    removeTag(index) {
-      this.formData.tags.splice(index, 1);
-    },
     
     // 选择图片
     chooseImage() {
+      const maxCount = 3 - this.formData.images.length;
+      if (maxCount <= 0) {
+        uni.showToast({
+          title: '最多只能上传3张图片',
+          icon: 'none'
+        });
+        return;
+      }
+
       uni.chooseImage({
-        count: 3 - this.formData.images.length,
+        count: maxCount,
         sizeType: ['compressed'],
         sourceType: ['album', 'camera'],
         success: async (res) => {
-          for (const filePath of res.tempFilePaths) {
-            try {
-              const uploadResult = await uploadAchievementImage(filePath);
-              this.formData.images.push(uploadResult.url);
-            } catch (error) {
-              console.error('图片上传失败:', error);
-              uni.showToast({
-                title: '图片上传失败',
-                icon: 'none'
-              });
-            }
+          // 显示上传进度提示
+          uni.showLoading({
+            title: '上传图片中...',
+            mask: true
+          });
+
+          try {
+            // 并发上传所有选择的图片
+            const uploadPromises = res.tempFilePaths.map(filePath => 
+              uploadAchievementImage(filePath)
+            );
+            
+            const uploadResults = await Promise.all(uploadPromises);
+            
+            // 将上传成功的URL添加到表单数据中
+            this.formData.images = this.formData.images.concat(uploadResults);
+            
+            uni.hideLoading();
+            uni.showToast({
+              title: `成功上传${uploadResults.length}张图片`,
+              icon: 'success',
+              duration: 1500
+            });
+            
+            console.log('上传结果：', uploadResults);
+            console.log('当前图片列表：', this.formData.images);
+            
+          } catch (error) {
+            uni.hideLoading();
+            console.error('图片上传失败:', error);
+            uni.showToast({
+              title: error.message || '图片上传失败，请重试',
+              icon: 'none',
+              duration: 2000
+            });
           }
+        },
+        fail: (err) => {
+          console.error('选择图片失败:', err);
+          uni.showToast({
+            title: '选择图片失败',
+            icon: 'none'
+          });
         }
       });
     },
@@ -636,10 +661,20 @@ export default {
 <style>
 .achievement-container {
   min-height: 100vh;
+  z-index: 1;
   background: linear-gradient(135deg, #97a8f4 0%, #87e3f8 100%);
   padding-bottom: 120rpx;
 }
-
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  background: linear-gradient(to right, #050ce7, #04f9e5);
+  color: white;
+  position: relative;
+  z-index: 10;
+}
 /* 顶部个人概览区 */
 .header-section {
   background: rgba(255, 255, 255, 0.95);
@@ -649,7 +684,13 @@ export default {
   padding: 40rpx;
   box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.1);
 }
-
+.header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36rpx;
+  font-weight: bold;
+}
 .user-profile {
   display: flex;
   align-items: center;
@@ -1036,7 +1077,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1047,10 +1088,12 @@ export default {
   background: white;
   border-radius: 30rpx;
   width: 100%;
-  max-height: 80vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 1000;
 }
 
 .form-header {
@@ -1083,6 +1126,9 @@ export default {
 .form-content {
   flex: 1;
   padding: 0 40rpx;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: 60vh;
 }
 
 .form-group {
@@ -1105,6 +1151,8 @@ export default {
   font-size: 28rpx;
   color: #333;
   box-sizing: border-box;
+  pointer-events: auto;
+  touch-action: auto;
 }
 
 .form-input:focus, .form-textarea:focus {
@@ -1243,5 +1291,23 @@ export default {
 .form-btn.submit {
   background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
+}
+
+/* Picker 组件优化 */
+picker {
+  position: relative;
+  z-index: 1001;
+}
+
+/* Input 组件优化 */
+input {
+  position: relative;
+  z-index: auto !important;
+}
+
+.form-input {
+  display: block;
+  appearance: none;
+  -webkit-appearance: none;
 }
 </style>

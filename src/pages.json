@@ -43,13 +43,20 @@
 				"navigationStyle": "custom"
 			}
 		},
-		{
-			"path": "pages/trees/publish",
-			"style": {
-				"navigationBarTitleText": "发布树洞",
-				"navigationStyle": "custom"
-			}
-		},
+	{
+		"path": "pages/trees/publish",
+		"style": {
+			"navigationBarTitleText": "发布树洞",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/trees/post-detail",
+		"style": {
+			"navigationBarTitleText": "帖子详情",
+			"navigationStyle": "custom"
+		}
+	},
 		{
 			"path": "pages/profile/change_password",
 			"style": {

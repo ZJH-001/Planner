@@ -42,7 +42,7 @@
     >
       <view class="post-item" v-for="(post, index) in posts" :key="post.id || index" @tap="viewPostDetail(post.id)">
         <view class="post-header">
-          <image class="user-avatar" :src="post.userAvatar || '/static/avatars/default.png'" mode="aspectFill"></image>
+          <image class="user-avatar" :src="post.userAvatar || '/static/cat.png'" mode="aspectFill"></image>
           <view class="user-details">
             <text class="user-name">{{ post.userName || '匿名用户' }}</text>
             <text class="post-time">{{ formatTime(post.time) }}</text>
@@ -73,12 +73,12 @@
             <text class="action-count">{{ post.likes }}</text>
           </view>
           <view class="action-item">
-            <image class="action-icon" src="/static/icons/comment.png" mode="aspectFit"></image>
-            <text class="action-count">{{ post.comments }}</text>
+            <image class="action-icon" src="/static/icons/dislike.png" mode="aspectFit"></image>
+            <text class="action-count">{{ post.dislikes }}</text>
           </view>
           <view class="action-item">
-            <image class="action-icon" src="/static/icons/collect.png" mode="aspectFit"></image>
-            <text class="action-count">{{ post.collects }}</text>
+            <image class="action-icon" src="/static/icons/view.png" mode="aspectFit"></image>
+            <text class="action-count">{{ post.views }}</text>
           </view>
         </view>
       </view>
@@ -115,7 +115,6 @@ export default {
       // 话题分类列表
       categories: [
         { label: '全部', value: '' }, // value: '' 表示不筛选
-        { label: '热门', value: '热门' },
         { label: '学习', value: '学习' },
         { label: '情感', value: '情感' },
         { label: '生活', value: '生活' },
@@ -153,11 +152,11 @@ export default {
     
     searchPosts() {
       // 可以在这里实现搜索逻辑，将关键词添加到 query 中并重新加载
-      // this.query.keyword = this.searchKeyword;
-      // this.query.page = 1;
-      // this.posts = [];
-      // this.getTreePosts(true);
-      uni.showToast({ title: '搜索功能暂未实现', icon: 'none' });
+      this.query.keyword = this.searchKeyword;
+      this.query.page = 1;
+      this.posts = [];
+      this.getTreePosts(true);
+      uni.showToast({ title: '搜索中...', icon: 'none' });
     },
 
     // 2. 获取帖子列表的核心方法 (函数名已修改为 getTreePosts)
@@ -173,7 +172,7 @@ export default {
           page: this.query.page,
           size: this.query.size, // 4. 使用 size 参数
           topic: this.query.topic,
-          // keyword: this.query.keyword, 
+          keyword: this.query.keyword, 
         };
         
         // 调用 /api/trees/posts 接口，使用 getTreePosts 函数
