@@ -1,0 +1,145 @@
+{
+	"pages": [
+		{
+			"path": "pages/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/questionnaire",
+			"style": {
+				"navigationBarTitleText": "生涯规划问卷",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/trees",
+			"style": {
+				"navigationBarTitleText": "树洞",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/trees/publish",
+			"style": {
+				"navigationBarTitleText": "发布树洞",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/trees/post-detail",
+			"style": {
+				"navigationBarTitleText": "帖子详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/change_password",
+			"style": {
+				"navigationBarTitleText": "修改密码",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/edit_information",
+			"style": {
+				"navigationBarTitleText": "修改个人信息",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/personal_info",
+			"style": {
+				"navigationBarTitleText": "修改个人情况",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/look_at_me",
+			"style": {
+				"navigationBarTitleText": "看看我自己",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/forget_password",
+			"style": {
+				"navigationBarTitleText": "忘记密码",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/ai_chat",
+			"style": {
+				"navigationBarTitleText": "生涯规划助手",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/holland",
+			"style": {
+				"navigationBarTitleText": "霍兰德职业兴趣测评",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/world",
+			"style": {
+				"navigationBarTitleText": "规划",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/planning-detail",
+			"style": {
+				"navigationBarTitleText": "规划详情",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"list": [
+			{
+				"pagePath": "pages/index",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/profile",
+				"text": "我的"
+			},
+			{
+				"pagePath": "pages/trees",
+				"text": "树洞"
+			}
+		]
+	}
+}
